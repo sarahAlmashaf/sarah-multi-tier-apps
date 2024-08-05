@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: sarah_postgresC
+    environment:
+      POSTGRES_USER: sarah
+      POSTGRES_PASSWORD: 1234sarah
+      POSTGRES_DB: s_database
+    volumes:
+      - my_postgres_data:/var/lib/postgresql/data
+    networks:
+      - hanan_network
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: my-go-backendd
+    environment:
+      POSTGRES_USER: sarah
+      POSTGRES_PASSWORD: 1234sarah
+      POSTGRES_DB: s_database
+      POSTGRES_HOST: sarah_postgresC
+      POSTGRES_PORT: 5432
+    networks:
+      - sarah_network
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: my-html-frontend
+    networks:
+      - sarah_network
+    ports:
+      - "80:80"
+
+networks:
+  sarah_network:
+    driver: bridge
+
+volumes:
+  my_postgres_data:
+
